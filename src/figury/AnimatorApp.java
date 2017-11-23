@@ -1,15 +1,15 @@
 package figury;
 
-import java.awt.EventQueue;
-import java.awt.Toolkit;
+import java.awt.*;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.JButton;
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class AnimatorApp extends JFrame {
 
@@ -60,7 +60,15 @@ public class AnimatorApp extends JFrame {
 		btnAnimate.addActionListener(e -> kanwa.animate());
 		btnAnimate.setBounds(100, 239, 80, 23);
 		contentPane.add(btnAnimate);
-		
+
+		addComponentListener(new ComponentAdapter()
+		{
+			public void componentResized(ComponentEvent evt) {
+				Component c = (Component)evt.getSource();
+				contentPane.setSize(c.getSize());
+				kanwa.Update(contentPane.getWidth(),contentPane.getHeight());
+			}
+		});
 	}
 
 }
