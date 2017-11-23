@@ -1,12 +1,15 @@
 package figury;
 
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.SwingUtilities;
 import javax.swing.JButton;
-import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class AnimatorApp extends JFrame {
 
@@ -23,7 +26,7 @@ public class AnimatorApp extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AnimatorApp frame = new AnimatorApp();
+					final AnimatorApp frame = new AnimatorApp();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -34,26 +37,46 @@ public class AnimatorApp extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @param delay 
 	 */
 	public AnimatorApp() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		int ww = 450, wh = 300;
+		setBounds((screen.width-ww)/2, (screen.height-wh)/2, ww, wh);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
+		AnimPanel kanwa = new AnimPanel();
+		kanwa.setBounds(10, 11, 422, 219);
+		contentPane.add(kanwa);
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				kanwa.initialize();
+			}
+		});
+
 		JButton btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				kanwa.addFig();
+			}
+		});
 		btnAdd.setBounds(10, 239, 80, 23);
 		contentPane.add(btnAdd);
 		
 		JButton btnAnimate = new JButton("Animate");
+		btnAnimate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				kanwa.animate();
+			}
+		});
 		btnAnimate.setBounds(100, 239, 80, 23);
 		contentPane.add(btnAnimate);
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-		panel.setBounds(10, 11, 422, 219);
-		contentPane.add(panel);
 	}
+
 }
