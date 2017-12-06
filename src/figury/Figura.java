@@ -57,21 +57,24 @@ public abstract class Figura implements Runnable, ActionListener {
 
 	}
 
+	public void Update(Graphics2D buf, int w, int h){
+		buffer = buf;
+		width = w;
+		height = h;
+		// wypelnienie obiektu
+		buffer.setColor(clr.brighter());
+		buffer.fill(shape);
+		// wykreslenie ramki
+		buffer.setColor(clr.darker());
+		buffer.draw(shape);
+	}
+
 	@Override
 	public void run() {
 		// przesuniecie na srodek
 		aft.translate(100, 100);
 		area.transform(aft);
 		shape = area;
-
-		while (true) {
-			// przygotowanie nastepnego kadru
-			shape = nextFrame();
-			try {
-				Thread.sleep(delay);
-			} catch (InterruptedException e) {
-			}
-		}
 	}
 
 	protected Shape nextFrame() {
@@ -80,8 +83,15 @@ public abstract class Figura implements Runnable, ActionListener {
 		area = new Area(area);
 		aft = new AffineTransform();
 		Rectangle bounds = area.getBounds();
-		int cx = bounds.x + bounds.width / 2;
-		int cy = bounds.y + bounds.height / 2;
+		int cx, cy;
+		if (dx > 0)
+			cx = bounds.x + bounds.width;
+		else
+			cx = bounds.x;
+		if (dy > 0)
+			cy = bounds.y + bounds.height;
+		else
+			cy = bounds.y;
 		// odbicie
 		if (cx < 0 || cx > width)
 			dx = -dx;
@@ -101,6 +111,13 @@ public abstract class Figura implements Runnable, ActionListener {
 		return area;
 	}
 
+	public boolean isOutOfBounds(){
+		Rectangle bounds = area.getBounds();
+		int cx = bounds.x + bounds.width/2;
+		int cy = bounds.y + bounds.height/2;
+		return (cx > width || cy > height);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		// wypelnienie obiektu
@@ -109,6 +126,7 @@ public abstract class Figura implements Runnable, ActionListener {
 		// wykreslenie ramki
 		buffer.setColor(clr.darker());
 		buffer.draw(shape);
+		shape = nextFrame();
 	}
 
 }

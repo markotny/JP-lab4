@@ -6,6 +6,10 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -23,6 +27,12 @@ public class AnimPanel extends JPanel implements ActionListener {
 	// wykreslacz bufora
 	Graphics2D buffer;
 
+	int width, height;
+
+	boolean trace = false;
+
+	private ArrayList<Figura> FigureList;
+
 	private int delay = 30;
 
 	private Timer timer;
@@ -33,32 +43,57 @@ public class AnimPanel extends JPanel implements ActionListener {
 		super();
 		setBackground(Color.WHITE);
 		timer = new Timer(delay, this);
+		FigureList = new ArrayList<>();
 	}
 
 	public void initialize() {
-		int width = getWidth();
-		int height = getHeight();
+		width = getWidth();
+		height = getHeight();
 
 		image = createImage(width, height);
 		buffer = (Graphics2D) image.getGraphics();
+		buffer.setBackground(Color.WHITE);
 		buffer.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		device = (Graphics2D) getGraphics();
 		device.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	}
 
-	public void Update(int width, int height){
-		image.getScaledInstance(width,height,Image.SCALE_DEFAULT);
-		buffer = (Graphics2D) image.getGraphics();
-		buffer.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		device = (Graphics2D) getGraphics();
-		device.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	public void Update(){
+		Image old = image;
+		initialize();
+		buffer.setColor(Color.WHITE);
+		buffer.fillRect(0,0,width,height);
+		buffer.drawImage(old, 0,0,null);
+		for(Iterator<Figura> iterator = FigureList.iterator(); iterator.hasNext();){
+			Figura fig = iterator.next();
+			if (fig.isOutOfBounds()) {
+				timer.removeActionListener(fig);
+				iterator.remove();
+			}
+			else
+				fig.Update(buffer, width, height);
+		}
 	}
 
 	void addFig() {
-		Figura fig = (numer++ % 2 == 0) ? new Kwadrat(buffer, delay, getWidth(), getHeight())
-				: new Elipsa(buffer, delay, getWidth(), getHeight());
-		timer.addActionListener(fig);
-		new Thread(fig).start();
+		Figura fig;
+		switch(numer++ % 3){
+			case 0: fig = new Kwadrat(buffer, delay, width, height);
+				timer.addActionListener(fig);
+				new Thread(fig).start();
+				FigureList.add(fig);
+				break;
+			case 1: fig = new Elipsa(buffer, delay, width, height);
+				timer.addActionListener(fig);
+				new Thread(fig).start();
+				FigureList.add(fig);
+				break;
+			case 2: fig = new Pentagon(buffer, delay, width, height);
+				timer.addActionListener(fig);
+				new Thread(fig).start();
+				FigureList.add(fig);
+				break;
+		}
 	}
 
 	void animate() {
@@ -69,9 +104,18 @@ public class AnimPanel extends JPanel implements ActionListener {
 		}
 	}
 
+	public boolean getTrace(){
+		return trace;
+	}
+
+	public void setTrace(boolean t){
+		trace = t;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		device.drawImage(image, 0, 0, null);
-		buffer.clearRect(0, 0, getWidth(), getHeight());
+		if(!trace)
+			buffer.clearRect(0, 0, getWidth(), getHeight());
 	}
 }

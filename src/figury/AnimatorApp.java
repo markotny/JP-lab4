@@ -61,12 +61,25 @@ public class AnimatorApp extends JFrame {
 		btnAnimate.setBounds(100, 239, 80, 23);
 		contentPane.add(btnAnimate);
 
+		JButton btnTrace = new JButton("Traces");
+		btnTrace.addActionListener(e-> {
+			if (kanwa.getTrace())
+				kanwa.setTrace(false);
+			else
+				kanwa.setTrace(true);
+		});
+		btnTrace.setBounds(190,239,80,23);
+		contentPane.add(btnTrace);
+
 		addComponentListener(new ComponentAdapter()
 		{
 			public void componentResized(ComponentEvent evt) {
 				Component c = (Component)evt.getSource();
-				contentPane.setSize(c.getSize());
-				kanwa.Update(contentPane.getWidth(),contentPane.getHeight());
+				kanwa.setBounds(10,11,c.getWidth()-35, c.getHeight()-80);
+				btnAdd.setBounds(10,c.getHeight()-65,80,23);
+				btnAnimate.setBounds(100,c.getHeight()-65,80,23);
+				btnTrace.setBounds(190,c.getHeight()-65,80,23);
+				kanwa.Update();
 			}
 		});
 	}
