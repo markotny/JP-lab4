@@ -73,6 +73,9 @@ public class AnimPanel extends JPanel implements ActionListener {
 			else
 				fig.Update(buffer, width, height);
 		}
+
+		if (!timer.isRunning())
+			device.drawImage(image, 0, 0, null);
 	}
 
 	void addFig() {

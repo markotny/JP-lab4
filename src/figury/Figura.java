@@ -93,10 +93,17 @@ public abstract class Figura implements Runnable, ActionListener {
 		else
 			cy = bounds.y;
 		// odbicie
-		if (cx < 0 || cx > width)
-			dx = -dx;
-		if (cy < 0 || cy > height)
-			dy = -dy;
+
+		if (cx <= 0)
+			dx = Math.abs(dx);
+		else if (cx >= width)
+			dx = - Math.abs(dx);
+
+		if (cy <= 0)
+			dy = Math.abs(dy);
+		else if (cy >= height)
+			dy = - Math.abs(dy);
+
 		// zwiekszenie lub zmniejszenie
 		if (bounds.height > height / 3 || bounds.height < 10)
 			sf = 1 / sf;
